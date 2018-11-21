@@ -1,19 +1,10 @@
 package agent.planningagent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
+import environnement.*;
+import sun.font.EAttribute;
 import util.HashMapUtil;
-
-import java.util.HashMap;
-
-import environnement.Action;
-import environnement.Etat;
-import environnement.IllegalActionException;
-import environnement.MDP;
-import environnement.Action2D;
 
 
 /**
@@ -41,8 +32,9 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	public ValueIterationAgent(double gamma,  MDP mdp) {
 		super(mdp);
 		this.gamma = gamma;
-		//*** VOTRE CODE
-
+		V = new HashMap<>();
+		List<Etat> etats = mdp.getEtatsAccessibles();
+		etats.forEach(s -> V.put(s, (double) 0));
 	}
 
 
@@ -65,8 +57,29 @@ public class ValueIterationAgent extends PlanningValueAgent{
 		//lorsque l'on planifie jusqu'a convergence, on arrete les iterations lorsque
 		//delta < epsilon
 		this.delta=0.0;
-		//*** VOTRE CODE
 
+        List<Etat> etats = mdp.getEtatsAccessibles();
+
+        for (Etat s: etats) {
+            double Vmax = 0;
+            List<Action> actions = mdp.getActionsPossibles(s);
+            for (Action a: actions) {
+                double currentSum =0;
+                Map<Etat, Double> transitions = new HashMap<>();
+                try {
+                     transitions = mdp.getEtatTransitionProba(s, a);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Set<Etat> sPrimeList = transitions.keySet();
+                for (Etat sPrime: sPrimeList){
+                    currentSum += transitions.get(sPrime) * (mdp.getRecompense(s, a, sPrime) + (this.getGamma() * this.getValeur(sPrime)));
+                }
+                if(Vmax< currentSum)
+                    Vmax = currentSum;
+            }
+            V.put(s, Vmax);
+        }
 
 		// mise a jour vmax et vmin pour affichage du gradient de couleur:
 		//vmax est la valeur max de V pour tout s
@@ -84,16 +97,12 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	 */
 	@Override
 	public Action getAction(Etat e) {
-		//*** VOTRE CODE
-
-		return Action2D.NONE;
-
+	    List<Action> meilleuresActions = getPolitique(e);
+		return meilleuresActions.get(new Random().nextInt(meilleuresActions.size()));
 	}
 	@Override
 	public double getValeur(Etat _e) {
-		//*** VOTRE CODE
-
-		return 0.0;
+		return V.get(_e);
 	}
 	/**
 	 * renvoi action(s) de plus forte(s) valeur(s) dans etat
@@ -123,16 +132,14 @@ public class ValueIterationAgent extends PlanningValueAgent{
 		this.notifyObs();
 	}
 
-
-
-
-
 	public HashMap<Etat,Double> getV() {
 		return V;
 	}
+
 	public double getGamma() {
 		return gamma;
 	}
+
 	@Override
 	public void setGamma(double _g){
 		System.out.println("gamma= "+gamma);
