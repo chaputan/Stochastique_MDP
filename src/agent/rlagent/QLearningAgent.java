@@ -85,6 +85,8 @@ public class QLearningAgent extends RLAgent {
 	@Override
 	public void setQValeur(Etat e, Action a, double d) {
 		//*** VOTRE CODE
+		double q_val = ((1-this.alpha) * this.getQValeur(e, a)) + this.alpha * (d + this.gamma *())
+
 		HashMap tmp = new HashMap<Action, Double>();
 		tmp.put(a, d);
 		this.qvaleurs.put(e, tmp);
