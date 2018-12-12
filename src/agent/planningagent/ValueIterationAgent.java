@@ -50,10 +50,8 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	 */
 	@Override
 	public void updateV(){
-		//delta est utilise pour detecter la convergence de l'algorithme
-		//lorsque l'on planifie jusqu'a convergence, on arrete les iterations lorsque
-		//delta < epsilon
-		this.delta = this.getVmax();
+		
+		Map<Etat, Double> VAncien = (Map<Etat, Double>) V.clone();
 
         List<Etat> etats = mdp.getEtatsAccessibles();
 
@@ -89,7 +87,24 @@ public class ValueIterationAgent extends PlanningValueAgent{
         this.vmax = V.values().stream().max(Comparator.comparingDouble(v -> v)).get();
         this.vmin = V.values().stream().min(Comparator.comparingDouble(v -> v)).get();
         
-		this.delta = Math.abs(this.delta - this.getVmax());
+        // Calcul du delta
+        Set<Etat> etatsDelta = VAncien.keySet();     
+        Iterator<Etat> i = etatsDelta.iterator();
+        double res = 0;
+        double max = 0;
+        
+        while(i.hasNext()) {
+        	Etat s = i.next();
+        	res  = VAncien.get(s) - V.get(s);
+        	if(max < Math.abs(res)) {
+        		max = Math.abs(res);
+        	}
+        }
+        
+      //delta est utilise pour detecter la convergence de l'algorithme
+      //lorsque l'on planifie jusqu'a convergence, on arrete les iterations lorsque
+      //delta < epsilon
+		this.delta = max;
 		//******************* laisser notification a la fin de la methode
 		this.notifyObs();
 		
