@@ -1,6 +1,7 @@
 package agent.planningagent;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import environnement.*;
 import sun.font.EAttribute;
@@ -82,8 +83,8 @@ public class ValueIterationAgent extends PlanningValueAgent{
 		//vmax est la valeur max de V pour tout s
 		//vmin est la valeur min de V pour tout s 
 		// ...
-        this.vmax = V.values().stream().max((v1,v2) -> Double.compare(v1, v2)).get();
-        this.vmin = V.values().stream().min((v1,v2) -> Double.compare(v1, v2)).get();
+        this.vmax = V.values().stream().max(Comparator.comparingDouble(v -> v)).get();
+        this.vmin = V.values().stream().min(Comparator.comparingDouble(v -> v)).get();
         
 		this.delta = Math.abs(this.delta - this.getVmax());
 		//******************* laisser notification a la fin de la methode
@@ -119,8 +120,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
 
 		// retourne action de meilleure valeur dans _e selon V,
 		// retourne liste vide si aucune action legale (etat absorbant)
-        double Vmax = 0;
-        List<Action> res = new ArrayList<>();
+        Map<Action, Double> values = new HashMap<>();
         List<Action> actions = mdp.getActionsPossibles(_e);
         for (Action a: actions) {
             double currentSum =0;
@@ -134,12 +134,18 @@ public class ValueIterationAgent extends PlanningValueAgent{
             for (Etat sPrime: sPrimeList){
                 currentSum += transitions.get(sPrime) * (mdp.getRecompense(_e, a, sPrime) + (this.getGamma() * this.getValeur(sPrime)));
             }
-            if(Vmax <= currentSum){
-                Vmax = currentSum;
-                res.add(a);
-            }
+            values.put(a, currentSum);
         }
-        return res;
+        // On récupère les maximums
+        if(values.size() > 1){
+            double max = values.entrySet().stream().max((e1,e2)->e1.getValue() > e2.getValue() ? 1 : -1).get().getValue();
+            return values.entrySet().stream().filter(e->e.getValue() == max).map(Map.Entry::getKey).collect(Collectors.toList());
+        }
+        else if(values.size() ==1){
+            return values.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
 	}
 
 	@Override
@@ -167,10 +173,4 @@ public class ValueIterationAgent extends PlanningValueAgent{
 		System.out.println("gamma= "+gamma);
 		this.gamma = _g;
 	}
-
-
-
-
-
-
 }
