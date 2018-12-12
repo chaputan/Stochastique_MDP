@@ -37,12 +37,8 @@ public class ValueIterationAgent extends PlanningValueAgent{
 		etats.forEach(s -> V.put(s, (double) 0));
 	}
 
-
-
-
 	public ValueIterationAgent(MDP mdp) {
 		this(0.9,mdp);
-
 	}
 
 	/**
@@ -97,9 +93,13 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	 */
 	@Override
 	public Action getAction(Etat e) {
-	    List<Action> meilleuresActions = getPolitique(e);
-		return meilleuresActions.get(new Random().nextInt(meilleuresActions.size()));
+		List<Action> meilleuresActions = getPolitique(e);
+		if(meilleuresActions.size() == 0)
+		    return Action2D.NONE;
+        else
+		    return meilleuresActions.get(new Random().nextInt(meilleuresActions.size()));
 	}
+	
 	@Override
 	public double getValeur(Etat _e) {
 		return V.get(_e);
@@ -114,10 +114,27 @@ public class ValueIterationAgent extends PlanningValueAgent{
 
 		// retourne action de meilleure valeur dans _e selon V,
 		// retourne liste vide si aucune action legale (etat absorbant)
-		List<Action> returnactions = new ArrayList<Action>();
-
-		return returnactions;
-
+        double Vmax = 0;
+        List<Action> res = new ArrayList<>();
+        List<Action> actions = mdp.getActionsPossibles(_e);
+        for (Action a: actions) {
+            double currentSum =0;
+            Map<Etat, Double> transitions = new HashMap<>();
+            try {
+                transitions = mdp.getEtatTransitionProba(_e, a);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Set<Etat> sPrimeList = transitions.keySet();
+            for (Etat sPrime: sPrimeList){
+                currentSum += transitions.get(sPrime) * (mdp.getRecompense(_e, a, sPrime) + (this.getGamma() * this.getValeur(sPrime)));
+            }
+            if(Vmax <= currentSum){
+                Vmax = currentSum;
+                res.add(a);
+            }
+        }
+        return res;
 	}
 
 	@Override
