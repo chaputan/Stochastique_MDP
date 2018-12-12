@@ -58,7 +58,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
         List<Etat> etats = mdp.getEtatsAccessibles();
 
         for (Etat s: etats) {
-            double Vmax = 0;
+            double Vmax = -Double.MAX_VALUE;
             List<Action> actions = mdp.getActionsPossibles(s);
             for (Action a: actions) {
                 double currentSum =0;
@@ -72,10 +72,13 @@ public class ValueIterationAgent extends PlanningValueAgent{
                 for (Etat sPrime: sPrimeList){
                     currentSum += transitions.get(sPrime) * (mdp.getRecompense(s, a, sPrime) + (this.getGamma() * this.getValeur(sPrime)));
                 }
-                if(Vmax< currentSum)
+                if(Vmax < currentSum)
                     Vmax = currentSum;
             }
-            V.put(s, Vmax);
+            if(mdp.estAbsorbant(s))
+                V.put(s, 0.0);
+            else
+                V.put(s, Vmax);
         }
         
 
