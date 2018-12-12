@@ -1,9 +1,6 @@
 package agent.rlagent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javafx.util.Pair;
 import environnement.Action;
@@ -92,10 +89,19 @@ public class QLearningAgent extends RLAgent {
 		tmp.put(a, d);
 		this.qvaleurs.put(e, tmp);
 
+
 		// mise a jour vmax et vmin pour affichage du gradient de couleur:
 				//vmax est la valeur max de V pour tout s
 				//vmin est la valeur min de V pour tout s 
 				// ...
+		this.vmax = (double) qvaleurs
+				.values()
+				.stream()
+				.max(Comparator.comparingDouble(v -> (Double) v.values().toArray()[0])).get().values().toArray()[0];
+		this.vmin =(double) qvaleurs
+				.values()
+				.stream()
+				.min(Comparator.comparingDouble(v -> (Double) v.values().toArray()[0])).get().values().toArray()[0];
 
 
 		this.notifyObs();
