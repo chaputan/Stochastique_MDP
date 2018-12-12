@@ -99,7 +99,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
         else
 		    return meilleuresActions.get(new Random().nextInt(meilleuresActions.size()));
 	}
-	
+
 	@Override
 	public double getValeur(Etat _e) {
 		return V.get(_e);
