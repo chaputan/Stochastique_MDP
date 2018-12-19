@@ -85,11 +85,11 @@ public class QLearningAgent extends RLAgent {
     public void setQValeur(Etat e, Action a, double d) {
         //si le q(e,a) n'a pas de valeur au moment du calcul, on prend 0
         //*** VOTRE CODE
-        double q_val = ((1 - this.alpha) * this.getQValeur(this._env.getEtatCourant(), a)) + this.alpha * (d + this.gamma * (this.getQValeur(e, a)));
+        double q_val = ((1 - this.alpha) * this.getQValeur(e, a)) + this.alpha * (d + this.gamma * (this.getQValeur(this._env.getEtatCourant(), a)));
 
         HashMap tmp = new HashMap<Action, Double>();
         tmp.put(a, q_val);
-        this.qvaleurs.put(this._env.getEtatCourant(), tmp);
+        this.qvaleurs.put(e, tmp);
         this._env.setEtatCourant(e);
 
 
@@ -106,9 +106,7 @@ public class QLearningAgent extends RLAgent {
                 .stream()
                 .min(Comparator.comparingDouble(v -> (Double) v.values().toArray()[0])).get().values().toArray()[0];
 
-
         this.notifyObs();
-
     }
 
 
@@ -127,8 +125,8 @@ public class QLearningAgent extends RLAgent {
             System.out.println("QL mise a jour etat " + e + " action " + a + " etat' " + esuivant + " r " + reward);
 
         //*** VOTRE CODE
-        this._env.setEtatCourant(e);
-        setQValeur(esuivant, a, reward);
+        this._env.setEtatCourant(esuivant);
+        setQValeur(e, a, reward);
     }
 
     @Override
