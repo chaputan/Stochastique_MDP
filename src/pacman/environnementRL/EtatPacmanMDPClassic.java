@@ -1,22 +1,27 @@
 package pacman.environnementRL;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import environnement.Etat;
 import pacman.elements.StateAgentPacman;
 import pacman.elements.StateGamePacman;
-import environnement.Etat;
+
+import java.util.Objects;
 /**
  * Classe pour définir un etat du MDP pour l'environnement pacman avec QLearning tabulaire
 
  */
 public class EtatPacmanMDPClassic implements Etat , Cloneable{
 
-	
+    private StateAgentPacman fantome;
+    private boolean[][] dot;
+
 	public EtatPacmanMDPClassic(StateGamePacman _stategamepacman){
-	
-		
-		
+	    this.fantome = _stategamepacman.getGhostState(0);
+	    dot= new boolean[_stategamepacman.getMaze().getSizeX()][_stategamepacman.getMaze().getSizeY()];
+	    for(int x=0; x<_stategamepacman.getMaze().getSizeX();x++){
+	        for(int y=0;y<_stategamepacman.getMaze().getSizeY();y++)
+	            dot[x][y] = _stategamepacman.getMaze().isCapsule(x, y);
+        }
+        int x=0;
 	}
 	
 	@Override
@@ -37,15 +42,12 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 			// l'interface Cloneable
 			cnse.printStackTrace(System.err);
 		}
-		
-
-
 		// on renvoie le clone
 		return clone;
 	}
 
-
-
-	
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(fantome, dot);
+    }
 }

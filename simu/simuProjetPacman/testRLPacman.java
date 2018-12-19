@@ -96,7 +96,7 @@ public class testRLPacman extends Application{
 		rlagent.setMaxnbpasparepisode(10000);
 
 		if (DISPLAYPACMANGAME){
-		  	pacmanmdp.getGamepacman().setStep_delay(0);
+		  	pacmanmdp.getGamepacman().setStep_delay(1000);
 			//creation fenetre d'affichage
 			panel=new GamePacmanPanel(pacmanmdp.getGamepacman().getState());
 			pacmanmdp.getGamepacman().addObserver(panel);
@@ -106,7 +106,7 @@ public class testRLPacman extends Application{
 			frame.setPreferredSize(new Dimension(640,480));
 			frame.add(panel);
 			frame.pack();
-			frame.setVisible(false);
+			frame.setVisible(true);
 		}
 		
 
