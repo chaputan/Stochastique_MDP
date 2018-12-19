@@ -87,7 +87,7 @@ public class QLearningAgent extends RLAgent {
     @Override
     public void setQValeur(Etat e, Action a, double d) {
         //si le q(e,a) n'a pas de valeur au moment du calcul, on prend 0
-        double q_val = ((1 - this.alpha) * this.getQValeur(e, a)) + this.alpha * (d + this.gamma * (this.getQValeur(this._env.getEtatCourant(), a)));
+        double q_val = ((1 - this.alpha) * this.getQValeur(e, a)) + this.alpha * (d + this.gamma * (this.getValeur(this._env.getEtatCourant())));
 
         HashMap<Action, Double> tmp = new HashMap<>();
         tmp.put(a, q_val);
