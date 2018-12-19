@@ -55,7 +55,9 @@ public class QLearningAgent extends RLAgent {
         }
 
         //*** VOTRE CODE
-        //int nbMaxActions = this.;
+        for (Action a : this.getActionsLegales(e)){
+            if(this.getQValeur(e,a) == this.getValeur(e)) returnactions.add(a);
+        }
         return returnactions;
 
 
