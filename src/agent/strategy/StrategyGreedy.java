@@ -32,7 +32,7 @@ public class StrategyGreedy extends StrategyExploration{
 			return null;
 		}
         actions = this.agent.getActionsLegales(_e);
-		if(d<getEpsilon()){
+		if(d < getEpsilon()){
             int index = rand.nextInt(actions.size());//random entre 0 inclu et param exlu
             return actions.get(index);
         }
