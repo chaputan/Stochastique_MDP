@@ -1,7 +1,6 @@
 package agent.strategy;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import agent.rlagent.RLAgent;
 import environnement.Action;
@@ -32,10 +31,23 @@ public class StrategyGreedy extends StrategyExploration{
 		if (this.agent.getActionsLegales(_e).isEmpty()){
 			return null;
 		}
-	
-		//VOTRE CODE ICI
-		
-		return null;
+        actions = this.agent.getActionsLegales(_e);
+		if(d<getEpsilon()){
+            int index = rand.nextInt(actions.size());//random entre 0 inclu et param exlu
+            return actions.get(index);
+        }
+		else{
+            double maxValue = -Double.MAX_VALUE;
+            Action res = null;
+            for(Action action : actions){
+                double currValue = getAgent().getQValeur(_e, action);
+                if(currValue > maxValue){
+                    maxValue = currValue;
+                    res = action;
+                }
+            }
+            return res;
+        }
 	}
 
 	public double getEpsilon() {
