@@ -90,7 +90,8 @@ public class QLearningAgent extends RLAgent {
 
         HashMap tmp = new HashMap<Action, Double>();
         tmp.put(a, q_val);
-        this.qvaleurs.put(e, tmp);
+        if(this.qvaleurs.containsKey(e)) this.qvaleurs.get(e).put(a,q_val);
+        else this.qvaleurs.put(e, tmp);
         this._env.setEtatCourant(e);
 
 
@@ -106,6 +107,8 @@ public class QLearningAgent extends RLAgent {
                 .values()
                 .stream()
                 .min(Comparator.comparingDouble(v -> (Double) v.values().toArray()[0])).get().values().toArray()[0];
+
+        System.out.println(qvaleurs);
 
         this.notifyObs();
     }
