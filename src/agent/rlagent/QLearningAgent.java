@@ -55,7 +55,7 @@ public class QLearningAgent extends RLAgent {
         }
 
         //*** VOTRE CODE
-        int nbMaxActions = this.;
+        //int nbMaxActions = this.;
         return returnactions;
 
 
