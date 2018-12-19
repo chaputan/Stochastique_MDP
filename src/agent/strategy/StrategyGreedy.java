@@ -37,16 +37,9 @@ public class StrategyGreedy extends StrategyExploration{
             return actions.get(index);
         }
 		else{
-            double maxValue = -Double.MAX_VALUE;
-            Action res = null;
-            for(Action action : actions){
-                double currValue = getAgent().getQValeur(_e, action);
-                if(currValue > maxValue){
-                    maxValue = currValue;
-                    res = action;
-                }
-            }
-            return res;
+            List<Action> bestActions = this.getAgent().getPolitique(_e);
+            Collections.shuffle(bestActions);
+            return bestActions.get(0);
         }
 	}
 
