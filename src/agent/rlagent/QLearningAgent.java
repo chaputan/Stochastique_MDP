@@ -87,30 +87,31 @@ public class QLearningAgent extends RLAgent {
     @Override
     public void setQValeur(Etat e, Action a, double d) {
         //si le q(e,a) n'a pas de valeur au moment du calcul, on prend 0
-        //*** VOTRE CODE
         double q_val = ((1 - this.alpha) * this.getQValeur(e, a)) + this.alpha * (d + this.gamma * (this.getQValeur(this._env.getEtatCourant(), a)));
 
-        HashMap tmp = new HashMap<Action, Double>();
+        HashMap<Action, Double> tmp = new HashMap<>();
         tmp.put(a, q_val);
         if(this.qvaleurs.containsKey(e)) this.qvaleurs.get(e).put(a,q_val);
         else this.qvaleurs.put(e, tmp);
-        //this._env.setEtatCourant(e);
 
 
         // mise a jour vmax et vmin pour affichage du gradient de couleur:
         //vmax est la valeur max de V pour tout s
         //vmin est la valeur min de V pour tout s
         // ...
-        this.vmax = (double) qvaleurs
-                .values()
-                .stream()
-                .max(Comparator.comparingDouble(v -> (Double) v.values().toArray()[0])).get().values().toArray()[0];
-        this.vmin = (double) qvaleurs
-                .values()
-                .stream()
-                .min(Comparator.comparingDouble(v -> (Double) v.values().toArray()[0])).get().values().toArray()[0];
-
-        System.out.println(qvaleurs);
+        this.vmax = 0;
+        this.vmin = 0;
+        
+        for(HashMap<Action, Double> map : qvaleurs.values()) {
+        	for(double val : map.values()) {
+        		if(val > this.vmax) {
+        			this.vmax = val;
+        		}
+        		if(val < this.vmin) {
+        			this.vmin = val;
+        		}
+        	}
+        }
 
         this.notifyObs();
     }
