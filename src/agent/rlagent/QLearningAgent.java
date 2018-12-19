@@ -64,6 +64,7 @@ public class QLearningAgent extends RLAgent {
     @Override
     public double getValeur(Etat e) {
         //*** VOTRE CODE
+        if(this.getActionsLegales(e).isEmpty()) return 0.0;
         double max = this.getQValeur(e, this.getActionsLegales(e).get(0));
         for (Action a : this.getActionsLegales(e))
             if (this.getQValeur(e,a) > max) max = this.getQValeur(e,a);
@@ -74,8 +75,8 @@ public class QLearningAgent extends RLAgent {
     public double getQValeur(Etat e, Action a) {
         //*** VOTRE CODE
         double qval = 0.0;
-        if(this.qvaleurs.isEmpty()) return qval ;
-        else if(!this.qvaleurs.containsKey(e)) return qval ;
+        if(this.qvaleurs.isEmpty()) return 0.0 ;
+        else if(!this.qvaleurs.containsKey(e) || !this.qvaleurs.get(e).containsKey(a)) return 0.0 ;
         qval = this.qvaleurs.get(e).get(a);
         return qval;
     }
