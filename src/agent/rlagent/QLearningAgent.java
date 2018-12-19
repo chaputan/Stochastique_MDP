@@ -55,7 +55,9 @@ public class QLearningAgent extends RLAgent {
         }
 
         //*** VOTRE CODE
-        //int nbMaxActions = this.;
+        for (Action a : this.getActionsLegales(e)){
+            if(this.getQValeur(e,a) == this.getValeur(e)) returnactions.add(a);
+        }
         return returnactions;
 
 
@@ -92,7 +94,7 @@ public class QLearningAgent extends RLAgent {
         tmp.put(a, q_val);
         if(this.qvaleurs.containsKey(e)) this.qvaleurs.get(e).put(a,q_val);
         else this.qvaleurs.put(e, tmp);
-        this._env.setEtatCourant(e);
+        //this._env.setEtatCourant(e);
 
 
         // mise a jour vmax et vmin pour affichage du gradient de couleur:
