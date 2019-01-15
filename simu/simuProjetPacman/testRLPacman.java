@@ -39,9 +39,9 @@ public class testRLPacman extends Application{
 	/** nombre d'experiences a lancer (pour faire une moyenne), une experience est un apprentissage sur plusieurs parties */
 	static int nbmean =3;
 	/** nombre de parties ou l'agent apprend */
-	static int nbepisodelearn = 500;
+	static int nbepisodelearn = 20;
 	/** nombre de partie ou l'agent exploite la politique apprise (epsilon=0) */
-	static int nbepisodegreedy = 300;
+	static int nbepisodegreedy = 20;
 	/** nombre de parties ou l'on affiche le jeu pacman pour voir le comportement appris  */
 	static int nbepisodegreedydisplay=0;
 
@@ -96,7 +96,7 @@ public class testRLPacman extends Application{
 		rlagent.setMaxnbpasparepisode(10000);
 
 		if (DISPLAYPACMANGAME){
-		  	pacmanmdp.getGamepacman().setStep_delay(1000);
+		  	pacmanmdp.getGamepacman().setStep_delay(0);
 			//creation fenetre d'affichage
 			panel=new GamePacmanPanel(pacmanmdp.getGamepacman().getState());
 			pacmanmdp.getGamepacman().addObserver(panel);
@@ -106,7 +106,7 @@ public class testRLPacman extends Application{
 			frame.setPreferredSize(new Dimension(640,480));
 			frame.add(panel);
 			frame.pack();
-			frame.setVisible(true);
+			frame.setVisible(false);
 		}
 		
 
