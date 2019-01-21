@@ -2,6 +2,7 @@ package pacman.environnementRL;
 
 import environnement.Etat;
 import pacman.elements.ActionPacman;
+import pacman.elements.MazePacman;
 import pacman.elements.StateAgentPacman;
 import pacman.elements.StateGamePacman;
 
@@ -12,24 +13,19 @@ import java.util.Objects;
  */
 public class EtatPacmanMDPClassic implements Etat , Cloneable{
 
-    //private StateAgentPacman fantome;
-    //private boolean[][] dot;
-	private int minDistGhost;
-	private int minDistDot;
-	private boolean isScarred;
 	private boolean canEscape;
-	private int nbDots;
+	private boolean isDotAccessible;
+	private boolean isDeadEnd;
+	private boolean onDanger;
+	private boolean isLose;
+	private boolean isWin;
 
 	public EtatPacmanMDPClassic(StateGamePacman _stategamepacman){
-	    //this.fantome = _stategamepacman.getGhostState(0);
 		StateAgentPacman statePacman = _stategamepacman.getPacmanState(0);
-	    /*dot= new boolean[_stategamepacman.getMaze().getSizeX()][_stategamepacman.getMaze().getSizeY()];
-	    for(int x=0; x<_stategamepacman.getMaze().getSizeX();x++){
-	        for(int y=0;y<_stategamepacman.getMaze().getSizeY();y++)
-	            dot[x][y] = _stategamepacman.getMaze().isCapsule(x, y);
-        }*/
-        int x=0;
-		minDistGhost = Integer.MAX_VALUE;
+		MazePacman maze = _stategamepacman.getMaze();
+		
+		/* Vérification si Pacman à un échappatoire */
+		int minDistGhost = Integer.MAX_VALUE;
 		for(int i = 0; i < _stategamepacman.getNumberOfGhosts(); i++) {
 			StateAgentPacman state = _stategamepacman.getGhostState(i);
 			
@@ -38,25 +34,76 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 				minDistGhost = dist;
 			}
 		}
-		minDistDot = _stategamepacman.getClosestDot(statePacman);
-		isScarred = statePacman.isScarred();
-		/*Pacman peut s'échapper si fantome a proximité*/
+		
 		canEscape = false;
-		if(minDistGhost == 1) {
-			for(int i = 1; i < 5; i++) {
+		if(minDistGhost <= 2) {
+			for(int i = 0; i < 4; i++) {
 				ActionPacman action = new ActionPacman(i);
 				
 				int[] coordonnees = new int[2];
 				
 				coordonnees = _stategamepacman.getNextPosition(action, statePacman);
 				
+				if(minDistGhost == 2) {
+					coordonnees = getNextCoordinates(action, coordonnees); // On prévoit à une case supplémentaire
+				}
+				
 				if(_stategamepacman.isLegalMove(action, statePacman) && !_stategamepacman.isGhost(coordonnees[0], coordonnees[1])) {
 					canEscape = true;
 				}
 			}
+		} else {
+			canEscape = true;
 		}
 		
-		nbDots = _stategamepacman.getFoodEaten();
+		isDotAccessible = false;
+		/* Vérification de l'accessibilité d'une gomme à proximité */
+		int minDistDot = _stategamepacman.getClosestDot(statePacman);
+		if(minDistDot <= 2) {
+			for(int i = 0; i < 4; i++) {
+				ActionPacman action = new ActionPacman(i);
+				
+				int[] coordonnees = new int[2];
+				
+				coordonnees = _stategamepacman.getNextPosition(action, statePacman);
+				
+				if(minDistDot == 2) {
+					coordonnees = getNextCoordinates(action, coordonnees); // On prévoit à une case supplémentaire
+				}
+				
+				if(_stategamepacman.isLegalMove(action, statePacman) && (maze.isCapsule(coordonnees[0], coordonnees[1]) || maze.isFood(coordonnees[0], coordonnees[1]))) {
+					isDotAccessible = true;
+				}
+			}
+		}
+		
+		/* Le pacman est en danger */
+		onDanger = false;
+		if(minDistGhost == 1) {
+			onDanger = true;
+		}
+		
+		/* Vérification de cul-de-sac */
+		int nbWalls = 0;
+		isDeadEnd = false;
+		for(int i = 0; i < 5; i++) {
+			ActionPacman action = new ActionPacman(i);
+			
+			if(!_stategamepacman.isLegalMove(action, statePacman)) {
+				nbWalls += 1;
+			}
+		}
+		
+		if(nbWalls == 3) {
+			isDeadEnd = true;
+			isDotAccessible = false;
+			onDanger = true;
+		}
+		
+		// On vérifie si on gagne ou perd
+		isLose = _stategamepacman.isLose();
+		isWin = _stategamepacman.isWin();
+		
 	}
 	
 	@Override
@@ -83,13 +130,35 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 
     @Override
     public int hashCode() {
-        return Objects.hash(minDistGhost, minDistDot, isScarred, canEscape, nbDots);
-    	/*int hash = 1;
-    	hash *= 2 + minDistDot;
-    	hash *= 3 + minDistGhost;
-    	hash *= 5 + Boolean.hashCode(isScarred);
-    	hash *= 7 + Boolean.hashCode(canEscape);
+        return Objects.hash(canEscape, isDotAccessible, isDeadEnd, onDanger, isLose, isWin);
+    }
+    
+    public int[] getNextCoordinates(ActionPacman action, int[] coordinates) {
+    	int[] res = new int[2];
+    	int x = coordinates[0];
+    	int y = coordinates[1];
     	
-    	return hash;*/
+    	switch(action.getDirection()) {
+    		case 0: // NORD
+    			res[0] = x;
+    			res[1] = y - 1;
+    			break;
+    		case 1: // SUD
+    			res[0] = x;
+    			res[1] = y + 1;
+    			break;
+    		case 2: // EST
+    			res[0] = x + 1;
+    			res[1] = y;
+    			break;
+    		case 3: // OUEST
+    			res[0] = x - 1;
+    			res[1] = y;
+    			break;
+    		default:
+    			res = coordinates;
+    	}
+    	
+    	return res;
     }
 }
