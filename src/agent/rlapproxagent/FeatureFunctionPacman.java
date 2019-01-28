@@ -4,6 +4,7 @@ import pacman.elements.ActionPacman;
 import pacman.elements.StateAgentPacman;
 import pacman.elements.StateGamePacman;
 import pacman.environnementRL.EnvironnementPacmanMDPClassic;
+import pacman.environnementRL.EtatPacmanMDPClassic;
 import environnement.Action;
 import environnement.Etat;
 /**
@@ -15,7 +16,7 @@ import environnement.Etat;
 public class FeatureFunctionPacman implements FeatureFunction{
 	private double[] vfeatures ;
 	
-	private static int NBACTIONS = 4;//5 avec NONE possible pour pacman, 4 sinon 
+	private static int NBACTIONS = 5;//5 avec NONE possible pour pacman, 4 sinon 
 	//--> doit etre coherent avec EnvironnementPacmanRL::getActionsPossibles
 
 
@@ -46,6 +47,37 @@ public class FeatureFunctionPacman implements FeatureFunction{
 		StateAgentPacman pacmanstate_next= stategamepacman.movePacmanSimu(0, new ActionPacman(a.ordinal()));
 		 
 		//*** VOTRE CODE
+		
+		// Fonctions caractéristiques
+		
+		// 1. Biais
+		//*** A définir
+		vfeatures[0] = 0;
+		
+		// 2. Nombre de fantômes proches
+		int x = pacmanstate_next.getX();
+		int y = pacmanstate_next.getY();
+		
+		if(stategamepacman.isGhost(x-1, y)) {
+			vfeatures[1] += 1;
+		}
+		if(stategamepacman.isGhost(x+1, y)) {
+			vfeatures[1] += 1;
+		}
+		if(stategamepacman.isGhost(x, y-1)) {
+			vfeatures[1] += 1;
+		}
+		if(stategamepacman.isGhost(x, y+1)) {
+			vfeatures[1] += 1;
+		}
+		
+		// 3. Pac-dot présent
+		if(stategamepacman.getMaze().isFood(pacmanstate_next.getLastX(), pacmanstate_next.getY())) {
+			vfeatures[2] = 1;
+		}
+		
+		// 4. Distance entre le Pacman et le Pac Dot
+		vfeatures[3] = stategamepacman.getClosestDot(pacmanstate_next);
 		
 		
 		

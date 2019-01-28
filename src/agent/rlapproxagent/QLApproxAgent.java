@@ -47,15 +47,14 @@ public class QLApproxAgent extends QLearningAgent{
 		return qVal;
         */
         double qVal = 0;
-        int i = 0;
         //vecteur de features
         double[] functionFeatures = featureFunction.getFeatures(e, a);
-        for (double poids: listePoids) {
+        for (int i = 0; i < listePoids.length; i++) {
             qVal += listePoids[i] * functionFeatures[i];
             i++;
         }
 
-        return 0.0;
+        return qVal;
 
 	}
 	
