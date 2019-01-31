@@ -17,8 +17,6 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 	private boolean isDotAccessible;
 	private boolean isDeadEnd;
 	private boolean onDanger;
-	private boolean isLose;
-	private boolean isWin;
 
 	public EtatPacmanMDPClassic(StateGamePacman _stategamepacman){
 		StateAgentPacman statePacman = _stategamepacman.getPacmanState(0);
@@ -100,10 +98,6 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 			onDanger = true;
 		}
 		
-		// On vérifie si on gagne ou perd
-		isLose = _stategamepacman.isLose();
-		isWin = _stategamepacman.isWin();
-		
 	}
 	
 	@Override
@@ -130,7 +124,7 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 
     @Override
     public int hashCode() {
-        return Objects.hash(canEscape, isDotAccessible, isDeadEnd, onDanger, isLose, isWin);
+        return Objects.hash(canEscape, isDotAccessible, isDeadEnd, onDanger);
     }
     
     public int[] getNextCoordinates(ActionPacman action, int[] coordinates) {
@@ -161,4 +155,24 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
     	
     	return res;
     }
+
+    public int getDimensions() {
+		return 24; // 4!
+	}
+
+	public boolean isCanEscape() {
+		return canEscape;
+	}
+
+	public boolean isDotAccessible() {
+		return isDotAccessible;
+	}
+
+	public boolean isDeadEnd() {
+		return isDeadEnd;
+	}
+
+	public boolean isOnDanger() {
+		return onDanger;
+	}
 }

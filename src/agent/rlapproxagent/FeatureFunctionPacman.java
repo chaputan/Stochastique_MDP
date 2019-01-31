@@ -16,7 +16,7 @@ import environnement.Etat;
 public class FeatureFunctionPacman implements FeatureFunction{
 	private double[] vfeatures ;
 	
-	private static int NBACTIONS = 5;//5 avec NONE possible pour pacman, 4 sinon 
+	private static int NBACTIONS = 4;//5 avec NONE possible pour pacman, 4 sinon
 	//--> doit etre coherent avec EnvironnementPacmanRL::getActionsPossibles
 
 
@@ -51,8 +51,7 @@ public class FeatureFunctionPacman implements FeatureFunction{
 		// Fonctions caractéristiques
 		
 		// 1. Biais
-		//*** A définir
-		vfeatures[0] = 0;
+		vfeatures[0] = 1;
 		
 		// 2. Nombre de fantômes proches
 		int x = pacmanstate_next.getX();
